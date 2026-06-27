@@ -1,12 +1,240 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #0a0a0a;
-  color: #00ff9f;
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b1020;
+  color: #eef6ff;
 }
 
-/* Cyberpunk Empire theme */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #0b1020;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
 .dashboard {
   min-height: 100vh;
-  padding: 20px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(12, 113, 95, 0.35), transparent 36%),
+    linear-gradient(220deg, rgba(154, 67, 28, 0.28), transparent 34%),
+    #0b1020;
+}
+
+.hero,
+.contentPanel,
+.widePanel,
+.statPanel,
+.botCard,
+.actionCard {
+  border: 1px solid rgba(238, 246, 255, 0.16);
+  background: rgba(8, 13, 28, 0.82);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+}
+
+.hero {
+  max-width: 1120px;
+  margin: 0 auto 18px;
+  padding: 32px;
+  border-radius: 8px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #69e8bf;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  max-width: 820px;
+  margin: 0;
+  font-size: clamp(2.1rem, 7vw, 4.8rem);
+  line-height: 0.98;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.45rem, 3vw, 2.15rem);
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 1.08rem;
+}
+
+p {
+  color: #cad8e8;
+  line-height: 1.6;
+}
+
+.heroCopy {
+  max-width: 720px;
+  margin: 18px 0 0;
+  font-size: 1.06rem;
+}
+
+.tabBar {
+  max-width: 1120px;
+  margin: 0 auto 18px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tab {
+  min-height: 44px;
+  border: 1px solid rgba(238, 246, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(9, 15, 32, 0.86);
+  color: #eef6ff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.tab:hover,
+.activeTab {
+  background: #69e8bf;
+  color: #071016;
+}
+
+.panelGrid,
+.contentPanel {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.statPanel,
+.widePanel,
+.contentPanel,
+.botCard,
+.actionCard {
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.statValue {
+  display: block;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #ffbf69;
+}
+
+.statLabel,
+.cardMeta {
+  color: #97a9bd;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.widePanel {
+  grid-column: 1 / -1;
+}
+
+.sectionHeader,
+.botHeader,
+.actionCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.statusPill,
+.priority {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  color: #071016;
+  background: #69e8bf;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.botGrid,
+.actionList {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.botGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.actionCard {
+  align-items: center;
+}
+
+.priorityHigh {
+  background: #ff8a80;
+}
+
+.priorityMedium {
+  background: #ffbf69;
+}
+
+.priorityLow {
+  background: #9cc9ff;
+}
+
+.botCard strong {
+  display: block;
+  margin-top: 14px;
+  color: #eef6ff;
+}
+
+@media (max-width: 760px) {
+  .dashboard {
+    padding: 14px;
+  }
+
+  .hero,
+  .contentPanel,
+  .widePanel,
+  .statPanel,
+  .botCard,
+  .actionCard {
+    padding: 18px;
+  }
+
+  .tabBar,
+  .panelGrid,
+  .botGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeader,
+  .botHeader,
+  .actionCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
