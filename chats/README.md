@@ -1,5 +1,5 @@
 # Chat Archives
 
-Directory for exported/ summarized Grok conversations.
+**Preserved from original repo.** Directory for exported / summarized Grok conversations.
 
-Populate with past chat key points for bot training.
+Stage 3 goal: BuddyAI ingests files dropped here so routing and memory improve over time.

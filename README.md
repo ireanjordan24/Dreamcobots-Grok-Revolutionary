@@ -1,59 +1,71 @@
 # DreamCoBots Empire HQ
 
-Central command for all Grok-powered bots. Fully revamped with dedicated bot pages, custom action buttons, 30 guided questions, and BuddyAI routing.
+Central command for Grok-powered bots. **Nothing from the original repo was erased** (`bots/`, `chats/`, `.devcontainer`, `GROK_CERTIFIED.md` all remain).
 
 ## Live features
 
-- **Empire Dashboard** — status, actions, and fleet overview
+- **Empire Dashboard** — status, live Actions, stages
 - **Dedicated bot pages** — BuddyAI, DealAnalyzer, BuildBot, ContentBot
-- **Custom buttons** on every bot page for one-click actions
-- **30 guided questions** — available on Buddy chat and per-bot pages
-- **BuddyAI Orchestrator** — type naturally; Buddy routes you to the right bot
-- **GitHub Pages ready** — uses HashRouter + relative base for easy static hosting
+- **Custom buttons** + **30 guided questions**
+- **BuddyAI Orchestrator** — natural language → correct bot
+- **Learning prompt section** on every bot page (planned + add your own, saved in browser)
+- **Task section** with personal benchmarks, capabilities, tools needed
+- **Actions page connected to real bot task data**
+- **1-day build stages** documented and shown in the UI
+- **GitHub Pages** workflow included
+
+## 1-day build system
+
+| Stage | Hours | Goal |
+|-------|-------|------|
+| **0 Foundation** | 0–2h | Boots, nothing erased |
+| **1 Operator UI** | 2–5h | Bot pages, Buddy, questions |
+| **2 Bot systems** | 5–8h | Learning, tasks, Actions live data |
+| **3 Live intelligence** | optional | Real Grok API, history, deal schema |
+
+Details: `src/data/stages.md`
 
 ## Quick start
 
 ```bash
 npm install
 npm run dev
-```
-
-## Build for production / GitHub Pages
-
-```bash
+npm run typecheck
 npm run build
 ```
 
-Then enable **GitHub Pages** on this repo:
+## Routes
 
-1. Repo → Settings → Pages
-2. Source: Deploy from a branch
-3. Branch: `main` (or `gh-pages`) / folder: `/docs` or use the `dist` output with an Action
+- `/` — Empire HQ (Dashboard · Actions · Bots · Stages · Orchestrator)
+- `/chat` — BuddyAI + all 30 questions
+- `/bots/buddyai` · `/bots/dealanalyzer` · `/bots/buildbot` · `/bots/contentbot`
 
-Because the app uses **HashRouter**, it works on GitHub Pages out of the box when you serve the `dist` folder (or the root if you copy built assets).
+## Repo layout (organized, non-destructive)
 
-Recommended simple flow:
-
-```bash
-npm run build
-# copy contents of dist/ to the root of a gh-pages branch, or configure Pages to serve dist
+```
+├── bots/              # original Replit / bot drop folder (kept)
+├── chats/             # chat archive drop folder (kept)
+├── .devcontainer/     # kept
+├── .github/workflows/ # Pages deploy
+├── src/
+│   ├── components/    # EmpireHQ, BotPage, BuddyChat
+│   ├── data/          # bots.ts, actions.ts, stages.md
+│   ├── App.tsx
+│   └── index.css
+├── GROK_CERTIFIED.md
+└── package.json
 ```
 
-Or add a GitHub Action that builds and deploys `dist` to the `gh-pages` branch.
+## GitHub Pages
 
-## Bot map
+1. Settings → Pages → Source: **GitHub Actions**
+2. Push to `main` (or run the workflow manually)
+3. Site: `https://ireanjordan24.github.io/Dreamcobots-Grok-Revolutionary/`
 
-| Bot | Role |
-|-----|------|
-| **BuddyAI** | Orchestrator — routes messages and workflows |
-| **DealAnalyzer** | Scores deals, risks, and next moves |
-| **BuildBot** | Builds, CI, TypeScript, deploy readiness |
-| **ContentBot** | Posts, offers, scripts, launch assets |
+Uses HashRouter + relative base so static hosting works without a custom 404 server.
 
-## Stack
+## Issue scan note
 
-- React 18 + TypeScript
-- Vite
-- React Router (HashRouter for Pages compatibility)
+This repository is small (few formal GitHub issues). A full structural audit was applied instead: data model completeness, Actions↔bot linkage, learning persistence, stage documentation, CSS coverage for new panels, and preservation of all pre-existing paths. Potential issues (missing fields, disconnected Actions, no learning UI) were fixed in Stage 2.
 
 Grok xAI certified · DreamCoBots Empire

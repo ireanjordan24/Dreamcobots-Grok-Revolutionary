@@ -1,5 +1,13 @@
 export type BotStatus = 'Online' | 'Ready' | 'Planning' | 'Beta';
 
+export type BotTask = {
+  id: string;
+  title: string;
+  status: 'todo' | 'doing' | 'done';
+  benchmark: string;
+  priority: 'High' | 'Medium' | 'Low';
+};
+
 export type Bot = {
   id: string;
   name: string;
@@ -12,6 +20,16 @@ export type Bot = {
   customButtons: { label: string; action: string; prompt: string }[];
   questions: string[];
   keywords: string[];
+  /** What the bot already does well */
+  capabilities: string[];
+  /** Tools / integrations this bot needs to reach full power */
+  toolsNeeded: string[];
+  /** Personal performance benchmarks */
+  benchmarks: { label: string; target: string; current: string }[];
+  /** Planned learning curriculum */
+  learningPlan: string[];
+  /** Active / staged tasks owned by this bot */
+  tasks: BotTask[];
 };
 
 export const bots: Bot[] = [
@@ -42,6 +60,38 @@ export const bots: Bot[] = [
       'How do I connect my chat history and files?',
     ],
     keywords: ['route', 'help', 'which bot', 'orchestrat', 'workflow', 'start', 'buddy', 'general', 'idea', 'what should'],
+    capabilities: [
+      'Natural-language intent detection',
+      'Bot routing by keyword + name match',
+      'Workflow staging across specialists',
+      'Guided-question orchestration',
+      'Hand-off of prompts between pages',
+    ],
+    toolsNeeded: [
+      'Grok / xAI API key for live replies',
+      'Persistent chat history store',
+      'Knowledge-file indexer',
+      'Action logging backend',
+      'Optional vector memory',
+    ],
+    benchmarks: [
+      { label: 'Routing accuracy', target: '≥ 90%', current: 'Keyword baseline' },
+      { label: 'Time-to-correct-bot', target: '< 3s', current: 'Instant (frontend)' },
+      { label: 'Context retention', target: 'Session + history', current: 'Session only' },
+    ],
+    learningPlan: [
+      'Improve multi-intent detection (split one message into several bots)',
+      'Learn user preference history (who they prefer for certain tasks)',
+      'Ingest exported Grok chat archives from /chats',
+      'Map action outcomes back into better routing scores',
+      'Support voice-style short commands',
+    ],
+    tasks: [
+      { id: 'b1', title: 'Wire real Grok reply endpoint', status: 'todo', benchmark: 'First live reply < 5s', priority: 'High' },
+      { id: 'b2', title: 'Load /chats exports into context', status: 'todo', benchmark: 'Parse at least 1 archive format', priority: 'High' },
+      { id: 'b3', title: 'Persist routing decisions', status: 'doing', benchmark: 'Log last 50 routes locally', priority: 'Medium' },
+      { id: 'b4', title: 'Add confidence score UI', status: 'todo', benchmark: 'Show match strength to user', priority: 'Low' },
+    ],
   },
   {
     id: 'dealanalyzer',
@@ -70,6 +120,38 @@ export const bots: Bot[] = [
       'What does a high-upside low-risk deal look like?',
     ],
     keywords: ['deal', 'score', 'opportunity', 'risk', 'lead', 'business', 'analyze', 'compare', 'upside', 'partner'],
+    capabilities: [
+      'Structured opportunity scoring',
+      'Risk flag generation',
+      'Side-by-side comparison framing',
+      'Next-action recommendation',
+      'Lead → action plan conversion',
+    ],
+    toolsNeeded: [
+      'Deal intake form + schema',
+      'Scoring rule engine (weights)',
+      'Export to PDF / CSV',
+      'CRM or spreadsheet connector',
+      'Historical deal outcome feedback',
+    ],
+    benchmarks: [
+      { label: 'Score consistency', target: 'Same inputs → same score', current: 'Prompt-based' },
+      { label: 'Risk coverage', target: '≥ 5 risk dimensions', current: 'Prompt-guided' },
+      { label: 'Time to next-action', target: '< 2 min', current: 'Manual' },
+    ],
+    learningPlan: [
+      'Learn your preferred scoring weights (upside vs risk)',
+      'Ingest past wins/losses to calibrate',
+      'Recognize industry-specific risk patterns',
+      'Auto-suggest missing data fields before scoring',
+      'Track which recommendations were actually followed',
+    ],
+    tasks: [
+      { id: 'd1', title: 'Design deal intake fields', status: 'doing', benchmark: '8–12 clear fields', priority: 'High' },
+      { id: 'd2', title: 'Define default scoring weights', status: 'todo', benchmark: 'Documented rule set', priority: 'High' },
+      { id: 'd3', title: 'Add compare-two-deals UI', status: 'todo', benchmark: 'Side-by-side view', priority: 'Medium' },
+      { id: 'd4', title: 'Exportable summary card', status: 'todo', benchmark: 'Copy + download', priority: 'Medium' },
+    ],
   },
   {
     id: 'buildbot',
@@ -98,6 +180,38 @@ export const bots: Bot[] = [
       'How do I generate clean release notes?',
     ],
     keywords: ['build', 'deploy', 'github', 'typescript', 'ci', 'action', 'release', 'code', 'vite', 'typecheck'],
+    capabilities: [
+      'TypeScript + Vite build path ownership',
+      'GitHub Actions workflow authoring',
+      'Deploy-to-Pages readiness',
+      'Release note drafting',
+      'Pre-deploy checklists',
+    ],
+    toolsNeeded: [
+      'npm / Node 20 CI runners',
+      'GitHub Actions secrets (if any)',
+      'Optional preview environment',
+      'Source maps for debugging',
+      'Dependabot or Renovate (later)',
+    ],
+    benchmarks: [
+      { label: 'Clean typecheck', target: '0 errors', current: 'Strict mode on' },
+      { label: 'Build time', target: '< 60s CI', current: 'Local Vite' },
+      { label: 'Deploy success rate', target: '100% on main', current: 'Workflow added' },
+    ],
+    learningPlan: [
+      'Learn repo-specific lint / style rules',
+      'Track flaky CI steps and auto-suggest fixes',
+      'Map common TypeScript errors in this codebase',
+      'Improve release-note templates from real commits',
+      'Detect missing env / secret requirements early',
+    ],
+    tasks: [
+      { id: 'bb1', title: 'Verify Pages workflow green', status: 'doing', benchmark: 'Successful deploy job', priority: 'High' },
+      { id: 'bb2', title: 'Add typecheck-only CI job', status: 'todo', benchmark: 'Fails on TS error', priority: 'High' },
+      { id: 'bb3', title: 'Document local build steps', status: 'done', benchmark: 'README section', priority: 'Medium' },
+      { id: 'bb4', title: 'Stage 2 automation plan', status: 'todo', benchmark: 'Written checklist', priority: 'Medium' },
+    ],
   },
   {
     id: 'contentbot',
@@ -126,12 +240,43 @@ export const bots: Bot[] = [
       'How do I keep content consistent across channels?',
     ],
     keywords: ['content', 'post', 'write', 'script', 'offer', 'marketing', 'social', 'launch', 'copy', 'email'],
+    capabilities: [
+      'Social post generation',
+      'Offer / landing framing',
+      'Short video & voiceover scripts',
+      'Launch asset packs',
+      'Brand-voice consistency prompts',
+    ],
+    toolsNeeded: [
+      'Brand voice guide document',
+      'Content calendar (sheet or Notion)',
+      'Approval checkpoint checklist',
+      'Asset export formats',
+      'Optional Canva / design handoff notes',
+    ],
+    benchmarks: [
+      { label: 'On-brand rate', target: '≥ 95%', current: 'Prompt-guided' },
+      { label: 'Time to first draft', target: '< 3 min', current: 'Manual' },
+      { label: 'Reuse of winning formats', target: 'Template library', current: 'None yet' },
+    ],
+    learningPlan: [
+      'Lock DreamCoBots brand voice and tone',
+      'Learn which post formats get best response',
+      'Build a reusable offer template library',
+      'Ingest past winning posts / scripts',
+      'Support multi-channel variants from one idea',
+    ],
+    tasks: [
+      { id: 'c1', title: 'Write brand voice one-pager', status: 'todo', benchmark: '1-page guide', priority: 'High' },
+      { id: 'c2', title: 'Create first content calendar', status: 'todo', benchmark: '2-week plan', priority: 'High' },
+      { id: 'c3', title: 'Define approval checkpoints', status: 'todo', benchmark: 'Checklist of 5', priority: 'Medium' },
+      { id: 'c4', title: 'Ship 3 launch asset templates', status: 'todo', benchmark: 'Post + email + script', priority: 'Medium' },
+    ],
   },
 ];
 
-// Shared + extra guided questions to reach 30 total unique prompts across the system
+/** 30 guided questions used by Buddy + bot pages */
 export const allGuidedQuestions: string[] = [
-  // BuddyAI
   'Which bot should handle my current project?',
   'How do I get started with DreamCoBots?',
   'Can you remember context from previous chats?',
@@ -140,7 +285,6 @@ export const allGuidedQuestions: string[] = [
   'Can you create a multi-bot workflow for me?',
   'What information do you need to route me accurately?',
   'How do I connect my chat history and files?',
-  // DealAnalyzer
   'How do you score a new business opportunity?',
   'What are the biggest risks I should watch for?',
   'Is this deal worth pursuing right now?',
@@ -149,7 +293,6 @@ export const allGuidedQuestions: string[] = [
   'Can you turn a lead into a clear action plan?',
   'How do I compare two different deals?',
   'What does a high-upside low-risk deal look like?',
-  // BuildBot
   'Is the project currently buildable?',
   'What TypeScript issues should I fix first?',
   'How do I set up GitHub Actions for this repo?',
@@ -158,7 +301,6 @@ export const allGuidedQuestions: string[] = [
   'How do I keep builds fast and reliable?',
   'What should be in a Stage 2 automation plan?',
   'How do I generate clean release notes?',
-  // ContentBot
   'What is the brand voice for DreamCoBots content?',
   'Can you turn this idea into a social post?',
   'How do I create a content calendar?',
@@ -173,7 +315,7 @@ export function getBotById(id: string): Bot | undefined {
 
 export function routeToBot(userMessage: string): Bot {
   const lower = userMessage.toLowerCase();
-  let best: Bot = bots[0]; // default BuddyAI
+  let best: Bot = bots[0];
   let bestScore = 0;
 
   for (const bot of bots) {
@@ -181,7 +323,6 @@ export function routeToBot(userMessage: string): Bot {
     for (const kw of bot.keywords) {
       if (lower.includes(kw)) score += 1;
     }
-    // slight boost for exact name match
     if (lower.includes(bot.name.toLowerCase()) || lower.includes(bot.id)) {
       score += 3;
     }
@@ -191,7 +332,6 @@ export function routeToBot(userMessage: string): Bot {
     }
   }
 
-  // if almost no signal, keep BuddyAI
   if (bestScore === 0) return bots[0];
   return best;
 }

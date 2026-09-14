@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getBotById, bots } from '../data/bots';
+import { actionsForBot } from '../data/actions';
+
+const LEARN_KEY = (id: string) => `dreamco-learn-${id}`;
 
 const BotPage: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
@@ -8,6 +11,19 @@ const BotPage: React.FC = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [customPrompt, setCustomPrompt] = useState('');
   const [activePrompt, setActivePrompt] = useState<string | null>(null);
+  const [extraLearning, setExtraLearning] = useState<string[]>([]);
+  const [newLearn, setNewLearn] = useState('');
+
+  useEffect(() => {
+    if (!bot) return;
+    try {
+      const raw = localStorage.getItem(LEARN_KEY(bot.id));
+      if (raw) setExtraLearning(JSON.parse(raw) as string[]);
+      else setExtraLearning([]);
+    } catch {
+      setExtraLearning([]);
+    }
+  }, [bot?.id]);
 
   if (!bot) {
     return (
@@ -22,6 +38,33 @@ const BotPage: React.FC = () => {
       </main>
     );
   }
+
+  const botActions = actionsForBot(bot.id);
+
+  const persistLearning = (items: string[]) => {
+    setExtraLearning(items);
+    try {
+      localStorage.setItem(LEARN_KEY(bot.id), JSON.stringify(items));
+    } catch {
+      /* ignore quota */
+    }
+  };
+
+  const addLearning = (e: React.FormEvent) => {
+    e.preventDefault();
+    const t = newLearn.trim();
+    if (!t) return;
+    if (extraLearning.includes(t) || bot.learningPlan.includes(t)) {
+      setNewLearn('');
+      return;
+    }
+    persistLearning([...extraLearning, t]);
+    setNewLearn('');
+  };
+
+  const removeLearning = (item: string) => {
+    persistLearning(extraLearning.filter((x) => x !== item));
+  };
 
   const handleButton = (prompt: string) => {
     setActivePrompt(prompt);
@@ -63,6 +106,114 @@ const BotPage: React.FC = () => {
         </div>
       </header>
 
+      {/* Capabilities + Tools */}
+      <section className="contentPanel twoCol">
+        <div>
+          <p className="eyebrow">Capabilities</p>
+          <h2>What {bot.name} already does</h2>
+          <ul className="bulletList">
+            {bot.capabilities.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="eyebrow">Tools needed</p>
+          <h2>To reach full power</h2>
+          <ul className="bulletList">
+            {bot.toolsNeeded.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Benchmarks */}
+      <section className="contentPanel">
+        <p className="eyebrow">Personal benchmarks</p>
+        <h2>How we measure {bot.name}</h2>
+        <div className="benchGrid">
+          {bot.benchmarks.map((b) => (
+            <article className="benchCard" key={b.label}>
+              <strong>{b.label}</strong>
+              <p className="cardMeta">Target: {b.target}</p>
+              <p>Current: {b.current}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Tasks */}
+      <section className="contentPanel">
+        <div className="sectionHeader">
+          <div>
+            <p className="eyebrow">Task section</p>
+            <h2>{bot.name} task bench</h2>
+          </div>
+          <span className="statusPill">{bot.tasks.length} tasks</span>
+        </div>
+        <div className="actionList">
+          {bot.tasks.map((task) => (
+            <article className="actionCard" key={task.id}>
+              <div>
+                <p className="cardMeta">
+                  {task.status.toUpperCase()} · Benchmark: {task.benchmark}
+                </p>
+                <h3>{task.title}</h3>
+              </div>
+              <span className={`priority priority${task.priority}`}>{task.priority}</span>
+            </article>
+          ))}
+        </div>
+        {botActions.length > 0 && (
+          <p className="cardMeta" style={{ marginTop: 12 }}>
+            Also linked on the Actions page ({botActions.length} empire actions owned by this bot).
+          </p>
+        )}
+      </section>
+
+      {/* Learning */}
+      <section className="contentPanel">
+        <div className="sectionHeader">
+          <div>
+            <p className="eyebrow">Learning prompt section</p>
+            <h2>What {bot.name} plans to learn</h2>
+          </div>
+        </div>
+        <ul className="bulletList">
+          {bot.learningPlan.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+
+        <h3 style={{ marginTop: 20 }}>Add something you want {bot.name} to learn</h3>
+        <p className="cardMeta">Saved in this browser (localStorage). Clears only if you clear site data.</p>
+        <form className="promptForm inlineForm" onSubmit={addLearning}>
+          <input
+            type="text"
+            value={newLearn}
+            onChange={(e) => setNewLearn(e.target.value)}
+            placeholder={`e.g. Learn my preferred ${bot.name === 'DealAnalyzer' ? 'risk weights' : 'style'}…`}
+          />
+          <button type="submit" className="primaryBtn">
+            Add to learning plan
+          </button>
+        </form>
+        {extraLearning.length > 0 && (
+          <ul className="bulletList userLearnList">
+            {extraLearning.map((item) => (
+              <li key={item}>
+                <span>{item}</span>
+                <button type="button" className="tinyBtn" onClick={() => removeLearning(item)}>
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Custom buttons */}
       <section className="contentPanel" aria-label="Custom actions">
         <div className="sectionHeader">
           <div>
@@ -85,6 +236,7 @@ const BotPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Guided questions */}
       <section className="contentPanel" aria-label="Guided questions">
         <div className="sectionHeader">
           <div>
@@ -106,6 +258,7 @@ const BotPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Talk */}
       <section className="contentPanel" aria-label="Talk to bot">
         <div className="sectionHeader">
           <div>

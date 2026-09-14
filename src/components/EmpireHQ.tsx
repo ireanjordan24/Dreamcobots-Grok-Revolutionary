@@ -1,77 +1,35 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { bots } from '../data/bots';
+import { actionItems, stages, countByStatus } from '../data/actions';
 
-type TabId = 'dashboard' | 'actions' | 'bots' | 'analyzer' | 'orchestrator';
-
-type ActionItem = {
-  title: string;
-  owner: string;
-  stage: string;
-  priority: 'High' | 'Medium' | 'Low';
-  result: string;
-};
-
-const actionItems: ActionItem[] = [
-  {
-    title: 'Certify bot missions',
-    owner: 'BuddyAI',
-    stage: 'Stage 1',
-    priority: 'High',
-    result: 'Every bot has a mission, next action, and quality gate before launch.',
-  },
-  {
-    title: 'Make Actions page operational',
-    owner: 'Empire HQ',
-    stage: 'Stage 1',
-    priority: 'High',
-    result: 'Actions are visible, filterable by tab, and tied to build stages.',
-  },
-  {
-    title: 'Dedicated bot pages + custom buttons',
-    owner: 'Empire HQ',
-    stage: 'Stage 1',
-    priority: 'High',
-    result: 'Each bot has its own page, action buttons, and guided questions.',
-  },
-  {
-    title: 'BuddyAI routing + 30 questions',
-    owner: 'BuddyAI',
-    stage: 'Stage 1',
-    priority: 'High',
-    result: 'Users can text Buddy; Buddy routes to the correct specialist bot.',
-  },
-  {
-    title: 'Add build safety rails',
-    owner: 'BuildBot',
-    stage: 'Stage 1',
-    priority: 'Medium',
-    result: 'TypeScript configuration exists so npm run build has a real path.',
-  },
-  {
-    title: 'Prepare automation workflows',
-    owner: 'BuildBot',
-    stage: 'Stage 2',
-    priority: 'Medium',
-    result: 'GitHub Actions can later run typecheck, build, and deployment checks.',
-  },
-];
+type TabId = 'dashboard' | 'actions' | 'bots' | 'stages' | 'orchestrator';
 
 const tabs: { id: TabId; label: string }[] = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'actions', label: 'Actions' },
   { id: 'bots', label: 'Bots' },
-  { id: 'analyzer', label: 'Analyzer' },
+  { id: 'stages', label: 'Stages' },
   { id: 'orchestrator', label: 'Orchestrator' },
 ];
 
 const EmpireHQ: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
+  const [filterOwner, setFilterOwner] = useState<string>('all');
 
   const highPriorityCount = useMemo(
-    () => actionItems.filter((item) => item.priority === 'High').length,
+    () => actionItems.filter((item) => item.priority === 'High' && item.status !== 'done').length,
     [],
   );
+
+  const doneCount = countByStatus('done');
+  const doingCount = countByStatus('doing');
+  const todoCount = countByStatus('todo');
+
+  const filteredActions = useMemo(() => {
+    if (filterOwner === 'all') return actionItems;
+    return actionItems.filter((a) => a.ownerId === filterOwner);
+  }, [filterOwner]);
 
   return (
     <main className="dashboard">
@@ -79,8 +37,9 @@ const EmpireHQ: React.FC = () => {
         <p className="eyebrow">DreamCoBots Empire HQ</p>
         <h1>Command center for bots, ideas, and actions</h1>
         <p className="heroCopy">
-          Fully built bot pages, custom action buttons, 30 guided questions, and
-          BuddyAI routing. Text Buddy or jump straight into a specialist.
+          Organized 1-day build stages. Every bot has learning plans, tasks,
+          benchmarks, capabilities, and tools needed. Actions page shows real
+          data from the fleet. Nothing from the original repo was erased.
         </p>
         <div className="heroActions">
           <Link to="/chat" className="primaryBtn">
@@ -113,23 +72,26 @@ const EmpireHQ: React.FC = () => {
           </article>
           <article className="statPanel">
             <span className="statValue">{actionItems.length}</span>
-            <span className="statLabel">Actions staged</span>
+            <span className="statLabel">Actions tracked</span>
           </article>
           <article className="statPanel">
             <span className="statValue">{highPriorityCount}</span>
-            <span className="statLabel">High priority</span>
+            <span className="statLabel">Open high priority</span>
           </article>
           <article className="widePanel">
-            <h2>Stage 1 complete — operator ready</h2>
+            <h2>Stage 2 in progress — bot systems online</h2>
             <p>
-              Every bot now has its own page, custom buttons, and guided questions.
-              BuddyAI can route natural language to the right specialist. Next:
-              connect real Grok/xAI backends and deploy automation.
+              Done: {doneCount} · Doing: {doingCount} · Todo: {todoCount}.
+              Learning sections, task benches, and Actions-from-bot-data are live.
+              Stage 3 is optional same-day or next session (real Grok API).
             </p>
             <div className="heroActions" style={{ marginTop: 16 }}>
               <Link to="/chat" className="primaryBtn">
                 Start with Buddy
               </Link>
+              <button type="button" className="secondaryBtn" onClick={() => setActiveTab('stages')}>
+                View 1-day stages
+              </button>
             </div>
           </article>
         </section>
@@ -139,20 +101,53 @@ const EmpireHQ: React.FC = () => {
         <section className="contentPanel" aria-label="Actions page">
           <div className="sectionHeader">
             <div>
-              <p className="eyebrow">Actions Page</p>
-              <h2>Build plan by stage</h2>
+              <p className="eyebrow">Actions Page — live bot data</p>
+              <h2>Empire plan + every bot task</h2>
             </div>
-            <span className="statusPill">Operational</span>
+            <span className="statusPill">Connected</span>
           </div>
+
+          <div className="filterRow">
+            <button
+              type="button"
+              className={filterOwner === 'all' ? 'questionChip activeChip' : 'questionChip'}
+              onClick={() => setFilterOwner('all')}
+            >
+              All
+            </button>
+            {bots.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                className={filterOwner === b.id ? 'questionChip activeChip' : 'questionChip'}
+                onClick={() => setFilterOwner(b.id)}
+              >
+                {b.name}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={filterOwner === 'empire' ? 'questionChip activeChip' : 'questionChip'}
+              onClick={() => setFilterOwner('empire')}
+            >
+              Empire HQ
+            </button>
+          </div>
+
           <div className="actionList">
-            {actionItems.map((item) => (
-              <article className="actionCard" key={item.title}>
+            {filteredActions.map((item) => (
+              <article className="actionCard" key={item.id}>
                 <div>
                   <p className="cardMeta">
-                    {item.stage} | {item.owner}
+                    {item.stageLabel} · {item.ownerLabel} · {item.status.toUpperCase()}
                   </p>
                   <h3>{item.title}</h3>
                   <p>{item.result}</p>
+                  {item.ownerId !== 'empire' && (
+                    <Link to={`/bots/${item.ownerId}`} className="backLink" style={{ marginTop: 8, display: 'inline-block' }}>
+                      Open {item.ownerLabel} page →
+                    </Link>
+                  )}
                 </div>
                 <span className={`priority priority${item.priority}`}>{item.priority}</span>
               </article>
@@ -166,9 +161,9 @@ const EmpireHQ: React.FC = () => {
           <div className="sectionHeader">
             <div>
               <p className="eyebrow">Bot Fleet</p>
-              <h2>Every bot has a full page, buttons, and questions</h2>
+              <h2>Learning · tasks · benchmarks · tools</h2>
             </div>
-            <span className="statusPill">Live pages</span>
+            <span className="statusPill">Full system</span>
           </div>
           <div className="botGrid">
             {bots.map((bot) => (
@@ -179,8 +174,11 @@ const EmpireHQ: React.FC = () => {
                 </div>
                 <p className="cardMeta">{bot.platform}</p>
                 <p>{bot.mission}</p>
-                <strong>Next action</strong>
-                <p>{bot.nextAction}</p>
+                <strong>Tasks</strong>
+                <p>
+                  {bot.tasks.filter((t) => t.status !== 'done').length} open ·{" "}
+                  {bot.benchmarks.length} benchmarks · {bot.learningPlan.length} learning items
+                </p>
                 <div className="botCardActions">
                   <Link to={`/bots/${bot.id}`} className="primaryBtn">
                     Open {bot.name}
@@ -192,19 +190,24 @@ const EmpireHQ: React.FC = () => {
         </section>
       )}
 
-      {activeTab === 'analyzer' && (
+      {activeTab === 'stages' && (
         <section className="contentPanel">
-          <p className="eyebrow">Deal Analyzer</p>
-          <h2>Best-idea scoring for every opportunity</h2>
-          <p>
-            DealAnalyzer is ready with custom scoring buttons and guided questions.
-            Open the full page to score deals, run risk checks, and get clear next moves.
-          </p>
-          <div className="heroActions" style={{ marginTop: 16 }}>
-            <Link to="/bots/dealanalyzer" className="primaryBtn">
-              Open DealAnalyzer
-            </Link>
+          <p className="eyebrow">1-day build system</p>
+          <h2>Realistic stages to ship in a day</h2>
+          <div className="actionList" style={{ marginTop: 16 }}>
+            {stages.map((s) => (
+              <article className="actionCard" key={s.id}>
+                <div>
+                  <p className="cardMeta">{s.hours}</p>
+                  <h3>{s.label}</h3>
+                  <p>{s.goal}</p>
+                </div>
+              </article>
+            ))}
           </div>
+          <p className="cardMeta" style={{ marginTop: 16 }}>
+            Full write-up lives in <code>src/data/stages.md</code> and the repo README.
+          </p>
         </section>
       )}
 
