@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { bots, routeToBot, allGuidedQuestions, type Bot } from '../data/bots';
+import { systemRule } from '../data/system';
 
 type Message = {
   id: string;
@@ -18,7 +19,7 @@ const BuddyChat: React.FC = () => {
     {
       id: 'welcome',
       role: 'buddy',
-      text: 'Hey — I\'m BuddyAI. Tell me what you need in plain language and I\'ll route you to the right specialist bot (DealAnalyzer, BuildBot, ContentBot, or stay with me). You can also tap any of the 30 guided questions below.',
+      text: 'Hey — I\'m BuddyAI, the only router. Tell me what you need and I\'ll send you to DealAnalyzer, BuildBot, ContentBot, or keep it here. Same names in Grok and ChatGPT.',
     },
   ]);
 
@@ -41,9 +42,18 @@ const BuddyChat: React.FC = () => {
     const target = routeToBot(trimmed);
     const isBuddy = target.id === 'buddyai';
 
+    const engineHint =
+      target.id === 'buildbot'
+        ? 'Engine: Grok + GitHub agents (scanner, actions operator, PR pilot).'
+        : target.id === 'contentbot'
+          ? 'Engine: ChatGPT Custom GPT or Grok ContentBot — same name.'
+          : target.id === 'dealanalyzer'
+            ? 'Engine: Grok or ChatGPT DealAnalyzer — same scoring job.'
+            : 'Engine: Buddy first. Then a specialist.';
+
     const buddyText = isBuddy
-      ? `Got it. I can handle this directly or keep refining. Here is what I understood: "${trimmed}". Ask a follow-up or pick a specialist if you want a deeper dive.`
-      : `I matched this to **${target.name}** (${target.platform}).\n\nMission: ${target.mission}\n\nI recommend opening ${target.name}'s page and using the custom buttons or guided questions. You can also refine your request here and I will re-route.`;
+      ? `Got it. I can handle this directly. I understood: "${trimmed}". ${systemRule}`
+      : `Matched to ${target.name} (${target.platform}).\n\nMission: ${target.mission}\n${engineHint}\n\nHandoff: result / next_owner=${target.id} / save=log this route.`;
 
     const buddyMsg: Message = {
       id: `b-${Date.now()}`,
@@ -77,7 +87,7 @@ const BuddyChat: React.FC = () => {
         <h1>Text Buddy — get routed to the right bot</h1>
         <p className="heroCopy">
           Type anything. Buddy analyzes your message and sends you to DealAnalyzer,
-          BuildBot, ContentBot, or keeps the conversation here for orchestration.
+          BuildBot, ContentBot, or keeps the conversation here. {systemRule}
         </p>
       </header>
 

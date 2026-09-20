@@ -2,8 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { bots } from '../data/bots';
 import { actionItems, stages, countByStatus } from '../data/actions';
+import { registry, systemRule, handoffFields } from '../data/system';
 
-type TabId = 'dashboard' | 'actions' | 'bots' | 'stages' | 'orchestrator';
+type TabId = 'dashboard' | 'actions' | 'bots' | 'stages' | 'orchestrator' | 'system';
 
 const tabs: { id: TabId; label: string }[] = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -11,6 +12,7 @@ const tabs: { id: TabId; label: string }[] = [
   { id: 'bots', label: 'Bots' },
   { id: 'stages', label: 'Stages' },
   { id: 'orchestrator', label: 'Orchestrator' },
+  { id: 'system', label: 'System' },
 ];
 
 const EmpireHQ: React.FC = () => {
@@ -31,6 +33,10 @@ const EmpireHQ: React.FC = () => {
     return actionItems.filter((a) => a.ownerId === filterOwner);
   }, [filterOwner]);
 
+  const faces = registry.filter((r) => r.kind === 'face');
+  const agents = registry.filter((r) => r.kind === 'agent');
+  const notes = registry.filter((r) => r.kind === 'note');
+
   return (
     <main className="dashboard">
       <header className="hero">
@@ -38,8 +44,8 @@ const EmpireHQ: React.FC = () => {
         <h1>Command center for bots, ideas, and actions</h1>
         <p className="heroCopy">
           Organized 1-day build stages. Every bot has learning plans, tasks,
-          benchmarks, capabilities, and tools needed. Actions page shows real
-          data from the fleet. Nothing from the original repo was erased.
+          benchmarks, capabilities, and tools needed. Grok, GitHub agents, and
+          ChatGPT now share one plugin registry. Nothing from the original repo was erased.
         </p>
         <div className="heroActions">
           <Link to="/chat" className="primaryBtn">
@@ -71,26 +77,25 @@ const EmpireHQ: React.FC = () => {
             <span className="statLabel">Bots live</span>
           </article>
           <article className="statPanel">
-            <span className="statValue">{actionItems.length}</span>
-            <span className="statLabel">Actions tracked</span>
+            <span className="statValue">{registry.length}</span>
+            <span className="statLabel">System plugins</span>
           </article>
           <article className="statPanel">
             <span className="statValue">{highPriorityCount}</span>
             <span className="statLabel">Open high priority</span>
           </article>
           <article className="widePanel">
-            <h2>Stage 2 in progress — bot systems online</h2>
+            <h2>Shared system is on the board</h2>
             <p>
-              Done: {doneCount} · Doing: {doingCount} · Todo: {todoCount}.
-              Learning sections, task benches, and Actions-from-bot-data are live.
-              Stage 3 is optional same-day or next session (real Grok API).
+              Done: {doneCount} · Doing: {doingCount} · Todo: {todoCount}. {systemRule}
+              Open the System tab for the full Grok + GitHub + ChatGPT map.
             </p>
             <div className="heroActions" style={{ marginTop: 16 }}>
               <Link to="/chat" className="primaryBtn">
                 Start with Buddy
               </Link>
-              <button type="button" className="secondaryBtn" onClick={() => setActiveTab('stages')}>
-                View 1-day stages
+              <button type="button" className="secondaryBtn" onClick={() => setActiveTab('system')}>
+                Open system map
               </button>
             </div>
           </article>
@@ -176,7 +181,7 @@ const EmpireHQ: React.FC = () => {
                 <p>{bot.mission}</p>
                 <strong>Tasks</strong>
                 <p>
-                  {bot.tasks.filter((t) => t.status !== 'done').length} open ·{" "}
+                  {bot.tasks.filter((t) => t.status !== 'done').length} open ·{' '}
                   {bot.benchmarks.length} benchmarks · {bot.learningPlan.length} learning items
                 </p>
                 <div className="botCardActions">
@@ -218,12 +223,73 @@ const EmpireHQ: React.FC = () => {
           <p>
             Text Buddy in plain language. Buddy reads your intent and routes you to
             the right bot — or keeps the conversation for multi-step workflows.
-            30 guided questions are available on the chat page.
+            Grok and ChatGPT must use the same names.
           </p>
           <div className="heroActions" style={{ marginTop: 16 }}>
             <Link to="/chat" className="primaryBtn">
               Text BuddyAI now
             </Link>
+          </div>
+        </section>
+      )}
+
+      {activeTab === 'system' && (
+        <section className="contentPanel" aria-label="Shared plugin system">
+          <div className="sectionHeader">
+            <div>
+              <p className="eyebrow">Grok · GitHub · ChatGPT</p>
+              <h2>One plugin system</h2>
+            </div>
+            <span className="statusPill">Registry live</span>
+          </div>
+          <p>{systemRule}</p>
+          <p className="cardMeta" style={{ marginTop: 8 }}>
+            Handoff line every worker uses: {handoffFields.join(' / ')}
+          </p>
+
+          <h3 style={{ marginTop: 24 }}>Operator faces</h3>
+          <div className="botGrid">
+            {faces.map((item) => (
+              <article className="botCard" key={item.id}>
+                <div className="botHeader">
+                  <h3>{item.name}</h3>
+                  <span className="statusPill">{item.engine}</span>
+                </div>
+                <p>{item.useWhen}</p>
+                {bots.some((b) => b.id === item.id) && (
+                  <Link to={`/bots/${item.id}`} className="backLink">
+                    Open page →
+                  </Link>
+                )}
+              </article>
+            ))}
+          </div>
+
+          <h3 style={{ marginTop: 24 }}>Grok / GitHub agents</h3>
+          <div className="actionList">
+            {agents.map((item) => (
+              <article className="actionCard" key={item.id}>
+                <div>
+                  <p className="cardMeta">{item.engine} · {item.path}</p>
+                  <h3>{item.name}</h3>
+                  <p>{item.useWhen}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <h3 style={{ marginTop: 24 }}>ChatGPT</h3>
+          <div className="actionList">
+            {notes.map((item) => (
+              <article className="actionCard" key={item.id}>
+                <div>
+                  <p className="cardMeta">{item.engine}</p>
+                  <h3>{item.name}</h3>
+                  <p>{item.useWhen}</p>
+                  <p className="cardMeta">Copy from system/CHATGPT_CUSTOM_GPTS.md into ChatGPT. Ai-bots repo is empty on purpose.</p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       )}
