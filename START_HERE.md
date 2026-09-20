@@ -7,8 +7,15 @@ https://github.com/DreamCo-Technologies/Dreamcobots/blob/main/buddy/easy_github/
 
 ## This smaller repo is the Empire HQ website
 
-- Dashboard, bot pages, Buddy chat, Actions, stages
+- Dashboard, bot pages, Buddy chat, Actions, stages, **System map**
 - Nothing original was erased (`bots/`, `chats/`, `.devcontainer`)
+
+## One system (Grok + GitHub + ChatGPT)
+
+1. Open Empire HQ → **System** tab
+2. Paste `system/SHARED_SYSTEM_PROMPT.md` into Grok instructions
+3. Paste `system/CHATGPT_CUSTOM_GPTS.md` into ChatGPT Custom GPTs
+4. Always talk to Buddy first
 
 ## Say instead of jargon
 
