@@ -4,6 +4,15 @@ import { getBotById, bots } from '../data/bots';
 import { actionsForBot } from '../data/actions';
 
 const LEARN_KEY = (id: string) => `dreamco-learn-${id}`;
+const PLACE_KEY = 'dreamco-memory-place';
+
+const PLACES = [
+  { id: 'browser_only', label: 'This browser only' },
+  { id: 'this_computer', label: 'This computer (export to buddy/memory/vault)' },
+  { id: 'chats_folder', label: 'Chats folder' },
+  { id: 'project_notes', label: 'Project notes' },
+  { id: 'github_export', label: 'GitHub export file (you send it up)' },
+];
 
 const BotPage: React.FC = () => {
   const { botId } = useParams<{ botId: string }>();
@@ -13,6 +22,7 @@ const BotPage: React.FC = () => {
   const [activePrompt, setActivePrompt] = useState<string | null>(null);
   const [extraLearning, setExtraLearning] = useState<string[]>([]);
   const [newLearn, setNewLearn] = useState('');
+  const [place, setPlace] = useState('browser_only');
 
   useEffect(() => {
     if (!bot) return;
@@ -20,6 +30,7 @@ const BotPage: React.FC = () => {
       const raw = localStorage.getItem(LEARN_KEY(bot.id));
       if (raw) setExtraLearning(JSON.parse(raw) as string[]);
       else setExtraLearning([]);
+      setPlace(localStorage.getItem(PLACE_KEY) || 'browser_only');
     } catch {
       setExtraLearning([]);
     }
@@ -45,6 +56,7 @@ const BotPage: React.FC = () => {
     setExtraLearning(items);
     try {
       localStorage.setItem(LEARN_KEY(bot.id), JSON.stringify(items));
+      localStorage.setItem(PLACE_KEY, place);
     } catch {
       /* ignore quota */
     }
@@ -54,6 +66,10 @@ const BotPage: React.FC = () => {
     e.preventDefault();
     const t = newLearn.trim();
     if (!t) return;
+    if (/api[_-]?key|secret|token|password/i.test(t)) {
+      setNewLearn('');
+      return;
+    }
     if (extraLearning.includes(t) || bot.learningPlan.includes(t)) {
       setNewLearn('');
       return;
@@ -64,6 +80,23 @@ const BotPage: React.FC = () => {
 
   const removeLearning = (item: string) => {
     persistLearning(extraLearning.filter((x) => x !== item));
+  };
+
+  const exportMemory = () => {
+    const payload = extraLearning.map((text) =>
+      JSON.stringify({
+        bot: bot.id,
+        kind: 'learn',
+        text,
+        place_id: place,
+        at: new Date().toISOString(),
+      }),
+    );
+    const blob = new Blob([payload.join('\n')], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${bot.id}-memory.jsonl`;
+    a.click();
   };
 
   const handleButton = (prompt: string) => {
@@ -106,7 +139,6 @@ const BotPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Capabilities + Tools */}
       <section className="contentPanel twoCol">
         <div>
           <p className="eyebrow">Capabilities</p>
@@ -128,7 +160,6 @@ const BotPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Benchmarks */}
       <section className="contentPanel">
         <p className="eyebrow">Personal benchmarks</p>
         <h2>How we measure {bot.name}</h2>
@@ -143,7 +174,6 @@ const BotPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Tasks */}
       <section className="contentPanel">
         <div className="sectionHeader">
           <div>
@@ -172,7 +202,6 @@ const BotPage: React.FC = () => {
         )}
       </section>
 
-      {/* Learning */}
       <section className="contentPanel">
         <div className="sectionHeader">
           <div>
@@ -186,8 +215,29 @@ const BotPage: React.FC = () => {
           ))}
         </ul>
 
+        <h3 style={{ marginTop: 20 }}>Where to store new lessons</h3>
+        <p className="cardMeta">
+          Pick a place. Browser notes stay on this device. Other places use an export file you can drop into that folder or send up.
+        </p>
+        <select
+          value={place}
+          onChange={(e) => {
+            setPlace(e.target.value);
+            try {
+              localStorage.setItem(PLACE_KEY, e.target.value);
+            } catch {
+              /* ignore */
+            }
+          }}
+        >
+          {PLACES.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+
         <h3 style={{ marginTop: 20 }}>Add something you want {bot.name} to learn</h3>
-        <p className="cardMeta">Saved in this browser (localStorage). Clears only if you clear site data.</p>
         <form className="promptForm inlineForm" onSubmit={addLearning}>
           <input
             type="text"
@@ -199,6 +249,9 @@ const BotPage: React.FC = () => {
             Add to learning plan
           </button>
         </form>
+        <button type="button" className="secondaryBtn" onClick={exportMemory}>
+          Download memory for the chosen place
+        </button>
         {extraLearning.length > 0 && (
           <ul className="bulletList userLearnList">
             {extraLearning.map((item) => (
@@ -213,7 +266,6 @@ const BotPage: React.FC = () => {
         )}
       </section>
 
-      {/* Custom buttons */}
       <section className="contentPanel" aria-label="Custom actions">
         <div className="sectionHeader">
           <div>
@@ -236,7 +288,6 @@ const BotPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Guided questions */}
       <section className="contentPanel" aria-label="Guided questions">
         <div className="sectionHeader">
           <div>
@@ -258,7 +309,6 @@ const BotPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Talk */}
       <section className="contentPanel" aria-label="Talk to bot">
         <div className="sectionHeader">
           <div>
