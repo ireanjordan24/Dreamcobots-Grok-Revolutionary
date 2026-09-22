@@ -51,6 +51,9 @@ const EmpireHQ: React.FC = () => {
           <Link to="/chat" className="primaryBtn">
             Text BuddyAI
           </Link>
+          <Link to="/memory" className="secondaryBtn">
+            Memory places
+          </Link>
           <Link to="/bots/dealanalyzer" className="secondaryBtn">
             Open DealAnalyzer
           </Link>
@@ -93,6 +96,9 @@ const EmpireHQ: React.FC = () => {
             <div className="heroActions" style={{ marginTop: 16 }}>
               <Link to="/chat" className="primaryBtn">
                 Start with Buddy
+              </Link>
+              <Link to="/memory" className="secondaryBtn">
+                Choose memory place
               </Link>
               <button type="button" className="secondaryBtn" onClick={() => setActiveTab('system')}>
                 Open system map
@@ -228,6 +234,9 @@ const EmpireHQ: React.FC = () => {
           <div className="heroActions" style={{ marginTop: 16 }}>
             <Link to="/chat" className="primaryBtn">
               Text BuddyAI now
+            </Link>
+            <Link to="/memory" className="secondaryBtn">
+              Choose memory place
             </Link>
           </div>
         </section>
