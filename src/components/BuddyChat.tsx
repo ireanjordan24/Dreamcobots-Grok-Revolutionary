@@ -82,6 +82,9 @@ const BuddyChat: React.FC = () => {
           <Link to="/" className="backLink">
             ← Empire HQ
           </Link>
+          <Link to="/memory" className="backLink">
+            Memory places →
+          </Link>
         </div>
         <p className="eyebrow">BuddyAI Orchestrator</p>
         <h1>Text Buddy — get routed to the right bot</h1>
