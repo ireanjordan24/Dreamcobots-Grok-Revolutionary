@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { bots } from '../data/bots';
+import { MEMORY_PLACES } from '../data/memoryPlaces';
 
 type Note = {
   at: string;
@@ -12,14 +13,6 @@ type Note = {
 
 const NOTES_KEY = 'dreamco-memory-notes';
 const PLACE_KEY = 'dreamco-memory-place';
-
-const PLACES = [
-  { id: 'browser_only', label: 'This browser only', hint: 'Stays on this device until you export.' },
-  { id: 'this_computer', label: 'This computer', hint: 'Download and drop into buddy/memory/vault/' },
-  { id: 'chats_folder', label: 'Chats folder', hint: 'Download and drop into chats/buddy_memory/' },
-  { id: 'project_notes', label: 'Project notes', hint: 'Download and drop into docs/memory/' },
-  { id: 'github_export', label: 'GitHub export file', hint: 'Download, review, then send up yourself.' },
-];
 
 const MemoryPage: React.FC = () => {
   const [place, setPlace] = useState('browser_only');
@@ -81,11 +74,11 @@ const MemoryPage: React.FC = () => {
     });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'buddy_memory.jsonl';
+    a.download = `buddy_memory_${place}.jsonl`;
     a.click();
   };
 
-  const chosen = PLACES.find((p) => p.id === place) || PLACES[0];
+  const chosen = MEMORY_PLACES.find((p) => p.id === place) || MEMORY_PLACES[3];
 
   return (
     <main className="dashboard">
@@ -98,19 +91,20 @@ const MemoryPage: React.FC = () => {
             Text Buddy →
           </Link>
         </div>
-        <p className="eyebrow">Buddy memory</p>
+        <p className="eyebrow">Buddy memory · 20 places</p>
         <h1>Choose where learning and teaching live</h1>
         <p className="heroCopy">
-          Teaching is how you want Buddy to act. Learning is what it should study.
-          GitHub Pages can keep notes in this browser, or you can download a file for another place.
+          Includes this computer, Google Drive, Google Cloud Storage, iCloud Drive,
+          Apple iCloud, Dropbox, OneDrive, and more. Cloud picks download a file.
+          Buddy does not log into your cloud for you.
         </p>
       </header>
 
       <section className="contentPanel">
         <p className="eyebrow">Storage place</p>
-        <h2>Pick a place</h2>
+        <h2>Pick one of 20 places</h2>
         <div className="filterRow" style={{ marginTop: 12 }}>
-          {PLACES.map((p) => (
+          {MEMORY_PLACES.map((p) => (
             <button
               key={p.id}
               type="button"
@@ -166,7 +160,7 @@ const MemoryPage: React.FC = () => {
         {error && <p className="cardMeta">{error}</p>}
         <div className="heroActions" style={{ marginTop: 16 }}>
           <button type="button" className="secondaryBtn" onClick={download}>
-            Download memory file
+            Download memory file for {chosen.label}
           </button>
         </div>
       </section>
