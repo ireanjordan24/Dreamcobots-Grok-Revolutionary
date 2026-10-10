@@ -14,6 +14,14 @@ export const systemRule =
 
 export const registry: RegistryEntry[] = [
   {
+    id: 'command-center',
+    name: 'Command Center',
+    kind: 'face',
+    engine: 'hq',
+    useWhen: 'Fleet catalog, deal score, Buddy route, Pages backend',
+    path: 'https://dreamco-technologies.github.io/Dreamcobots/command-center.html',
+  },
+  {
     id: 'buddyai',
     name: 'BuddyAI',
     kind: 'face',

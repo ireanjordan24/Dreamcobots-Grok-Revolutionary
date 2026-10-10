@@ -3,6 +3,7 @@ import EmpireHQ from './components/EmpireHQ';
 import BotPage from './components/BotPage';
 import BuddyChat from './components/BuddyChat';
 import MemoryPage from './components/MemoryPage';
+import CommandCenter from './components/CommandCenter';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<EmpireHQ />} />
         <Route path="/chat" element={<BuddyChat />} />
         <Route path="/memory" element={<MemoryPage />} />
+        <Route path="/command-center" element={<CommandCenter />} />
         <Route path="/bots/:botId" element={<BotPage />} />
       </Routes>
     </HashRouter>

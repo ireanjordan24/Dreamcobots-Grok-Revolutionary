@@ -4,7 +4,7 @@ import { bots } from '../data/bots';
 import { actionItems, stages, countByStatus } from '../data/actions';
 import { registry, systemRule, handoffFields } from '../data/system';
 
-type TabId = 'dashboard' | 'actions' | 'bots' | 'stages' | 'orchestrator' | 'system';
+type TabId = 'dashboard' | 'actions' | 'bots' | 'stages' | 'orchestrator' | 'system' | 'command';
 
 const tabs: { id: TabId; label: string }[] = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -13,6 +13,7 @@ const tabs: { id: TabId; label: string }[] = [
   { id: 'stages', label: 'Stages' },
   { id: 'orchestrator', label: 'Orchestrator' },
   { id: 'system', label: 'System' },
+  { id: 'command', label: 'Command Center' },
 ];
 
 const EmpireHQ: React.FC = () => {
@@ -56,6 +57,9 @@ const EmpireHQ: React.FC = () => {
           </Link>
           <Link to="/bots/dealanalyzer" className="secondaryBtn">
             Open DealAnalyzer
+          </Link>
+          <Link to="/command-center" className="secondaryBtn">
+            Command Center
           </Link>
         </div>
       </header>
@@ -238,6 +242,27 @@ const EmpireHQ: React.FC = () => {
             <Link to="/memory" className="secondaryBtn">
               Choose memory place
             </Link>
+          </div>
+        </section>
+      )}
+
+      
+      {activeTab === 'command' && (
+        <section className="contentPanel">
+          <p className="eyebrow">Connected · no Replit</p>
+          <h2>Command Center on GitHub Pages</h2>
+          <p>
+            Empire HQ is connected to the Dreamcobots Pages backend. The catalog,
+            status, and Buddy router live at the official Pages site. Replit is not used.
+          </p>
+          <div className="heroActions" style={{ marginTop: 16 }}>
+            <a className="primaryBtn" href="https://dreamco-technologies.github.io/Dreamcobots/command-center.html" target="_blank" rel="noreferrer">
+              Open Command Center
+            </a>
+            <a className="secondaryBtn" href="https://dreamco-technologies.github.io/Dreamcobots/backend-status.json" target="_blank" rel="noreferrer">
+              Backend status
+            </a>
+            <Link to="/chat" className="secondaryBtn">Text Buddy</Link>
           </div>
         </section>
       )}
