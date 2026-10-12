@@ -16,6 +16,9 @@ const tabs: { id: TabId; label: string }[] = [
   { id: 'command', label: 'Command Center' },
 ];
 
+const OWN_PAGES = 'https://ireanjordan24.github.io/Dreamcobots-Grok-Revolutionary';
+const ORG_PAGES = 'https://dreamco-technologies.github.io/Dreamcobots';
+
 const EmpireHQ: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const [filterOwner, setFilterOwner] = useState<string>('all');
@@ -246,24 +249,29 @@ const EmpireHQ: React.FC = () => {
         </section>
       )}
 
-      
       {activeTab === 'command' && (
         <section className="contentPanel">
-          <p className="eyebrow">Connected · no Replit</p>
-          <h2>Command Center on GitHub Pages</h2>
+          <p className="eyebrow">Connected · GitHub Pages ready</p>
+          <h2>Command Center & Dashboard</h2>
           <p>
-            Empire HQ is connected to the Dreamcobots Pages backend. The catalog,
-            status, and Buddy router live at the official Pages site. Replit is not used.
+            This Empire HQ dashboard is fully self-contained. Deployed via GitHub Actions to your Pages site.
+            Org catalog remains available as a secondary link.
           </p>
           <div className="heroActions" style={{ marginTop: 16 }}>
-            <a className="primaryBtn" href="https://dreamco-technologies.github.io/Dreamcobots/command-center.html" target="_blank" rel="noreferrer">
-              Open Command Center
+            <a className="primaryBtn" href={OWN_PAGES} target="_blank" rel="noreferrer">
+              Open live Empire HQ
             </a>
-            <a className="secondaryBtn" href="https://dreamco-technologies.github.io/Dreamcobots/backend-status.json" target="_blank" rel="noreferrer">
-              Backend status
+            <Link to="/command-center" className="secondaryBtn">
+              Internal Command Center
+            </Link>
+            <a className="secondaryBtn" href={`${ORG_PAGES}/command-center.html`} target="_blank" rel="noreferrer">
+              Org Command Center
             </a>
             <Link to="/chat" className="secondaryBtn">Text Buddy</Link>
           </div>
+          <p className="cardMeta" style={{ marginTop: 16 }}>
+            To publish: Settings → Pages → Source = GitHub Actions, then re-run the Deploy workflow.
+          </p>
         </section>
       )}
 
